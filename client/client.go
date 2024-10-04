@@ -6,7 +6,7 @@ import (
 )
 
 func ConnectToPeer() {
-	conn, err := net.Dial("tcp", "localhost:4040")
+	conn, err := net.Dial("tcp", "localhost:4041")
 	if err != nil {
 		log.Println("Error connecting to peer:", err)
 		return
