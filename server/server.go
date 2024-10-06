@@ -1,14 +1,16 @@
 package server
 
 import (
+	"bufio"
+	"io"
 	"log"
 	"net"
-
-	"github.com/concernum/snd/client"
+	"os"
+	"strings"
 )
 
 func CreateServer() {
-	listener, err := net.Listen("tcp", ":4040")
+	listener, err := net.Listen("tcp", "0.0.0.0:4040")
 	if err != nil {
 		log.Println("Error starting TCP Server:", err)
 		return
@@ -17,8 +19,6 @@ func CreateServer() {
 	defer listener.Close()
 
 	log.Println("TCP Server started")
-
-	go client.ConnectToPeer()
 
 	for {
 		conn, err := listener.Accept()
@@ -34,4 +34,41 @@ func CreateServer() {
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	log.Println("Handling connection from:", conn.RemoteAddr())
+
+	reader := bufio.NewReader(conn)
+
+	fileName, err := reader.ReadString('\n')
+	if err != nil {
+		log.Println("Error reading filename:", err)
+		return
+	}
+	fileName = strings.TrimSpace(fileName)
+
+	receivedFile, err := os.Create(fileName)
+	if err != nil {
+		log.Println("Error creating file:", err)
+		return
+	}
+	defer receivedFile.Close()
+
+	buffer := make([]byte, 1024) // 1 KB buffer size
+	for {
+		bytesRead, err := reader.Read(buffer)
+		if err != nil {
+			if err == io.EOF {
+				log.Println("File reception completed from:", conn.RemoteAddr())
+				break
+			}
+			log.Println("Error reading from connection:", err)
+			return
+		}
+
+		_, err = receivedFile.Write(buffer[:bytesRead])
+		if err != nil {
+			log.Println("Error writing to file:", err)
+			return
+		}
+	}
+
+	log.Println("File received successfully from:", conn.RemoteAddr())
 }
