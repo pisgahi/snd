@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"sync"
 
@@ -9,30 +10,59 @@ import (
 )
 
 func main() {
-	var wg sync.WaitGroup
-	wg.Add(1)
+	startServer := flag.Bool("start", false, "Start Server")
+	serverAddr := flag.String("usr", "", "Recipient")
+	fileToSend := flag.String("file", "", "File to send to usr")
+	terminate := flag.Bool("t", false, "Terminate server")
 
-	go func() {
-		defer wg.Done()
-		server.CreateServer()
-	}()
+	flag.Parse()
+
+	var wg sync.WaitGroup
+
+	if *startServer {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			log.Println("Starting server...")
+			server.CreateServer("0.0.0.0:4040")
+		}()
+	}
+
+	if *fileToSend != "" {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+
+			c := &client.Client{}
+			err := c.Connect(*serverAddr)
+			if err != nil {
+				log.Println("Error connecting to peer:", err)
+				return
+			}
+
+			err = c.SendFile(*fileToSend)
+			if err != nil {
+				log.Println("Error sending file:", err)
+				return
+			}
+
+			log.Println("File sent successfully.")
+
+			if *terminate {
+				log.Println("Terminating connection per -t flag.")
+			} else {
+				log.Println("Still connected...")
+				select {}
+			}
+
+			err = c.Close()
+			if err != nil {
+				log.Println("Error closing connection:", err)
+			} else {
+				log.Println("Connection closed.")
+			}
+		}()
+	}
 
 	wg.Wait()
-
-	c := &client.Client{}
-
-	err := c.Connect("0.0.0.0:4040")
-	if err != nil {
-		log.Println("Error connecting to peer:", err)
-		return
-	}
-	defer c.Close()
-
-	err = c.SendFile("client.go")
-	if err != nil {
-		log.Println("Error sending file:", err)
-		return
-	}
-
-	log.Println("File sent successfully!")
 }
