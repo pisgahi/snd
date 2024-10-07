@@ -9,13 +9,12 @@ import (
 	"strings"
 )
 
-func CreateServer() {
-	listener, err := net.Listen("tcp", "0.0.0.0:4040")
+func CreateServer(address string) {
+	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Println("Error starting TCP Server:", err)
 		return
 	}
-
 	defer listener.Close()
 
 	log.Println("TCP Server started")
