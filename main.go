@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
+	"os"
 	"sync"
 
 	"github.com/concernum/snd/client"
@@ -10,8 +12,13 @@ import (
 )
 
 func main() {
-	startServer := flag.Bool("start", false, "Start Server")
-	serverAddr := flag.String("usr", "", "Recipient")
+	if flag.NFlag() == 0 {
+		fmt.Println("Snd is a file transfer program utilizing TCP.")
+		os.Exit(0)
+	}
+
+	startServer := flag.Bool("s", false, "Start Server")
+	serverAddr := flag.String("to", "", "Recipient")
 	fileToSend := flag.String("file", "", "File to send to usr")
 	terminate := flag.Bool("t", false, "Terminate server")
 
