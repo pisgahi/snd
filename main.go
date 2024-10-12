@@ -2,8 +2,11 @@ package main
 
 import (
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 
+	certgen "github.com/concernum/snd/cert"
 	sndCli "github.com/concernum/snd/cli"
 	"github.com/concernum/snd/client"
 	"github.com/concernum/snd/server"
@@ -11,6 +14,27 @@ import (
 
 func main() {
 	flags := sndCli.ParseFlags()
+
+	certDir := "cert/certs"
+	err := os.MkdirAll(certDir, os.ModePerm)
+	if err != nil {
+		log.Fatalf("Failed to create cert/certs directory: %v", err)
+	}
+
+	serverCertFile := filepath.Join(certDir, "server-cert.pem")
+	serverKeyFile := filepath.Join(certDir, "server-key.pem")
+	clientCertFile := filepath.Join(certDir, "client-cert.pem")
+	clientKeyFile := filepath.Join(certDir, "client-key.pem")
+
+	err = certgen.GenerateSelfSignedCert(serverCertFile, serverKeyFile, "My Server")
+	if err != nil {
+		log.Fatalf("Failed to generate server certificate: %v", err)
+	}
+
+	err = certgen.GenerateSelfSignedCert(clientCertFile, clientKeyFile, "My Client")
+	if err != nil {
+		log.Fatalf("Failed to generate client certificate: %v", err)
+	}
 
 	var wg sync.WaitGroup
 
