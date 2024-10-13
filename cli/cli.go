@@ -7,19 +7,23 @@ import (
 )
 
 type Flags struct {
-	StartServer bool
 	FileToSend  string
-	ServerAddr  string
+	ReceivedDir string
+	StartServer bool
 	Terminate   bool
+	To          string
+	ServerAddr  string
 }
 
 func ParseFlags() *Flags {
-	var flags Flags
+	flags := &Flags{}
 
+	flag.StringVar(&flags.FileToSend, "f", "", "File to send")
+	flag.StringVar(&flags.ReceivedDir, "dir", "", "Directory for received files")
 	flag.BoolVar(&flags.StartServer, "s", false, "Start server")
-	flag.StringVar(&flags.ServerAddr, "to", "", "Recipient")
-	flag.StringVar(&flags.FileToSend, "file", "", "File to send")
 	flag.BoolVar(&flags.Terminate, "t", false, "Terminate server")
+	flag.StringVar(&flags.To, "to", "", "Recipient")
+	flag.StringVar(&flags.ServerAddr, "addr", "", "Server address")
 
 	flag.Parse()
 
@@ -28,5 +32,5 @@ func ParseFlags() *Flags {
 		os.Exit(0)
 	}
 
-	return &flags
+	return flags
 }
