@@ -6,11 +6,13 @@ import (
 	"log"
 	"net"
 	"os"
+	"path/filepath" 
 	"strconv"
 	"strings"
 )
 
 const ChunkSize = 64 * 1024 // 64 KB
+const BaseDir = "received"
 
 func CreateServer(address string) {
 	listener, err := net.Listen("tcp", address)
@@ -58,7 +60,16 @@ func handleConnection(conn net.Conn) {
 	}
 	log.Printf("Receiving file: %s (%d bytes)\n", fileName, fileSize)
 
-	receivedFile, err := os.Create(fileName)
+	// Create base directory if it doesn't exist (Merged from receiving-files branch)
+	err = os.MkdirAll(BaseDir, os.ModePerm)
+	if err != nil {
+		log.Println("Error creating base directory:", err)
+		return
+	}
+
+	escapedFilePath := filepath.Join(BaseDir, filepath.Base(fileName))
+
+	receivedFile, err := os.Create(escapedFilePath)
 	if err != nil {
 		log.Println("Error creating file:", err)
 		return
@@ -109,5 +120,5 @@ func handleConnection(conn net.Conn) {
 		}
 	}
 
-	log.Println("File received successfully from:", conn.RemoteAddr())
+	log.Println("File received successfully and saved to:", escapedFilePath)
 }
