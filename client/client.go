@@ -7,6 +7,9 @@ import (
 	"net"
 	"os"
 	"time"
+
+	sndCli "github.com/concernum/snd/cli"
+	"github.com/concernum/snd/sndcfg"
 )
 
 type Client struct {
@@ -90,4 +93,36 @@ func (c *Client) Close() error {
 		log.Println("Connection closed")
 	}
 	return nil
+}
+
+func HandleFileSending(c *Client, flags *sndCli.Flags, config *sndcfg.Config) {
+	addr := flags.ServerAddr
+	if addr == "" {
+		addr = config.ServerAddr
+	}
+
+	if err := c.Connect(addr); err != nil {
+		log.Println("Error connecting to peer:", err)
+		return
+	}
+
+	if err := c.SendFile(flags.FileToSend); err != nil {
+		log.Println("Error sending file:", err)
+		return
+	}
+
+	log.Println("File sent successfully.")
+
+	if flags.Terminate {
+		log.Println("Terminating connection per -t flag.")
+	} else {
+		log.Println("Still connected...")
+		select {}
+	}
+
+	if err := c.Close(); err != nil {
+		log.Println("Error closing connection:", err)
+	} else {
+		log.Println("Connection closed.")
+	}
 }

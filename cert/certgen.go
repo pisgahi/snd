@@ -10,10 +10,11 @@ import (
 	"log"
 	"math/big"
 	"os"
+	"path/filepath"
 	"time"
 )
 
-func GenerateSelfSignedCert(certFile, keyFile, commonName string) error {
+func generateSelfSignedCert(certFile, keyFile, commonName string) error {
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return err
@@ -62,4 +63,24 @@ func GenerateSelfSignedCert(certFile, keyFile, commonName string) error {
 
 	log.Println("Self-signed certificate and key generated successfully:", commonName)
 	return nil
+}
+
+func SetupCertificates() {
+	certDir := "cert/certs"
+	if err := os.MkdirAll(certDir, os.ModePerm); err != nil {
+		log.Fatalf("Failed to create cert/certs directory: %v", err)
+	}
+
+	serverCertFile := filepath.Join(certDir, ".server-cert.pem")
+	serverKeyFile := filepath.Join(certDir, ".server-key.pem")
+	clientCertFile := filepath.Join(certDir, ".client-cert.pem")
+	clientKeyFile := filepath.Join(certDir, ".client-key.pem")
+
+	if err := generateSelfSignedCert(serverCertFile, serverKeyFile, "My Server"); err != nil {
+		log.Fatalf("Failed to generate server certificate: %v", err)
+	}
+
+	if err := generateSelfSignedCert(clientCertFile, clientKeyFile, "My Client"); err != nil {
+		log.Fatalf("Failed to generate client certificate: %v", err)
+	}
 }
