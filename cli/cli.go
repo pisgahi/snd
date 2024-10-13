@@ -14,6 +14,7 @@ type Flags struct {
 	Terminate   bool
 	To          string
 	ServerAddr  string
+	Help        bool
 }
 
 func ParseFlags() *Flags {
@@ -24,10 +25,16 @@ func ParseFlags() *Flags {
 	flag.StringVar(&flags.CertDir, "cert", "", "Directory for certificates")
 	flag.BoolVar(&flags.StartServer, "s", false, "Start server")
 	flag.BoolVar(&flags.Terminate, "t", false, "Terminate server")
-	flag.StringVar(&flags.To, "to", "", "Recipient")
+	flag.StringVar(&flags.To, "to", "", "Recipient address")
 	flag.StringVar(&flags.ServerAddr, "addr", "", "Server address")
+	flag.BoolVar(&flags.Help, "h", false, "Display help information")
 
 	flag.Parse()
+
+	if flags.Help {
+		printHelp()
+		os.Exit(0)
+	}
 
 	if flag.NFlag() == 0 {
 		fmt.Println("Snd is a file transfer program utilizing TCP.")
@@ -35,4 +42,9 @@ func ParseFlags() *Flags {
 	}
 
 	return flags
+}
+
+func printHelp() {
+	fmt.Println("Snd is a file transfer program utilizing TCP.")
+	flag.PrintDefaults()
 }
