@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
-	"path/filepath" 
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -60,7 +60,6 @@ func handleConnection(conn net.Conn) {
 	}
 	log.Printf("Receiving file: %s (%d bytes)\n", fileName, fileSize)
 
-	// Create base directory if it doesn't exist (Merged from receiving-files branch)
 	err = os.MkdirAll(BaseDir, os.ModePerm)
 	if err != nil {
 		log.Println("Error creating base directory:", err)
