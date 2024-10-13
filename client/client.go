@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -11,6 +12,8 @@ import (
 type Client struct {
 	conn net.Conn
 }
+
+const ChunkSize = 64 * 1024
 
 func (c *Client) Connect(address string) error {
 	var err error
@@ -37,19 +40,31 @@ func (c *Client) SendFile(fileName string) error {
 	}
 	defer file.Close()
 
-	_, err = c.conn.Write([]byte(fmt.Sprintf("%s\n", fileName))) // Sending filename followed by newline
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return err
+	}
+	fileSize := fileInfo.Size()
+
+	_, err = c.conn.Write([]byte(fmt.Sprintf("%s:%d\n", fileName, fileSize)))
 	if err != nil {
 		return err
 	}
 
-	buffer := make([]byte, 1024) // 1 KB buffer size
+	buffer := make([]byte, ChunkSize)
+	chunkIndex := 0
 	for {
 		bytesRead, err := file.Read(buffer)
+		if err != nil && err != io.EOF {
+			return err
+		}
+		if bytesRead == 0 {
+			break
+		}
+
+		chunkHeader := fmt.Sprintf("Chunk %d of %d\n", chunkIndex, (fileSize+ChunkSize-1)/ChunkSize)
+		_, err = c.conn.Write([]byte(chunkHeader))
 		if err != nil {
-			if err.Error() == "EOF" {
-				log.Println("File transmission completed")
-				break
-			}
 			return err
 		}
 
@@ -57,9 +72,12 @@ func (c *Client) SendFile(fileName string) error {
 		if err != nil {
 			return err
 		}
+
+		log.Printf("Sent chunk %d (%d bytes)\n", chunkIndex, bytesRead)
+		chunkIndex++
 	}
 
-	log.Println("File sent successfully")
+	log.Println("File sent successfully in chunks")
 	return nil
 }
 
