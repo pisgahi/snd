@@ -25,7 +25,7 @@ func main() {
 		go func() {
 			defer wg.Done()
 			log.Println("Starting server...")
-			server.CreateServer(config.ServerAddr)
+			server.CreateServer(config.ServerAddr, config.ReceivedDir)
 		}()
 	}
 
@@ -34,7 +34,7 @@ func main() {
 		go func() {
 			defer wg.Done()
 			c := &client.Client{}
-			client.HandleFileSending(c, flags, config) // Call the standalone function
+			client.HandleFileSending(c, flags, config)
 		}()
 	}
 

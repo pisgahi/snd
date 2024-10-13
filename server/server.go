@@ -12,9 +12,8 @@ import (
 )
 
 const ChunkSize = 64 * 1024 // 64 KB
-const BaseDir = "received"
 
-func CreateServer(address string) {
+func CreateServer(address, baseDir string) {
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Println("Error starting TCP Server:", err)
@@ -31,11 +30,11 @@ func CreateServer(address string) {
 			continue
 		}
 
-		go handleConnection(conn)
+		go handleConnection(conn, baseDir)
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, baseDir string) {
 	defer conn.Close()
 	log.Println("Handling connection from:", conn.RemoteAddr())
 
@@ -60,13 +59,13 @@ func handleConnection(conn net.Conn) {
 	}
 	log.Printf("Receiving file: %s (%d bytes)\n", fileName, fileSize)
 
-	err = os.MkdirAll(BaseDir, os.ModePerm)
+	err = os.MkdirAll(baseDir, os.ModePerm)
 	if err != nil {
 		log.Println("Error creating base directory:", err)
 		return
 	}
 
-	escapedFilePath := filepath.Join(BaseDir, filepath.Base(fileName))
+	escapedFilePath := filepath.Join(baseDir, filepath.Base(fileName))
 
 	receivedFile, err := os.Create(escapedFilePath)
 	if err != nil {
