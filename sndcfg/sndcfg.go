@@ -62,7 +62,7 @@ func SetReceivedDir(filename, receivedDir string) error {
 }
 
 func LoadOrCreateConfig(flags *sndCli.Flags) *Config {
-	configFile := ".config.json"
+	configFile := "sndcfg/.config.json"
 
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
 		if flags.ServerAddr == "" || flags.ReceivedDir == "" {
