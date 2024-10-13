@@ -22,7 +22,7 @@ func CreateServer(address, baseDir string) {
 	}
 	defer listener.Close()
 
-	fmt.Println("TCP Server started")
+	fmt.Println("Server started")
 
 	for {
 		conn, err := listener.Accept()

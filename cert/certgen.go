@@ -13,6 +13,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/concernum/snd/sndcfg"
 )
 
 func generateSelfSignedCert(certFile, keyFile, commonName string) error {
@@ -62,14 +64,21 @@ func generateSelfSignedCert(certFile, keyFile, commonName string) error {
 	}
 	pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: privBytes})
 
-	fmt.Println("Self-signed certificate and key generated successfully:", commonName)
+	fmt.Println("Certificate & key generated:", commonName)
 	return nil
 }
 
 func SetupCertificates() {
-	certDir := "cert/certs"
+	configFile := "sndcfg/.config.json"
+	config, err := sndcfg.LoadConfig(configFile)
+	if err != nil {
+		log.Fatalf("Failed to load configuration: %v", err)
+	}
+
+	certDir := config.CertDir
+
 	if err := os.MkdirAll(certDir, os.ModePerm); err != nil {
-		log.Fatalf("Failed to create cert/certs directory: %v", err)
+		log.Fatalf("Failed to create %s directory: %v", certDir, err)
 	}
 
 	serverCertFile := filepath.Join(certDir, ".server-cert.pem")
@@ -77,11 +86,20 @@ func SetupCertificates() {
 	clientCertFile := filepath.Join(certDir, ".client-cert.pem")
 	clientKeyFile := filepath.Join(certDir, ".client-key.pem")
 
-	if err := generateSelfSignedCert(serverCertFile, serverKeyFile, "My Server"); err != nil {
-		log.Fatalf("Failed to generate server certificate: %v", err)
+	if _, err := os.Stat(serverCertFile); os.IsNotExist(err) || isFileMissing(serverKeyFile) {
+		if err := generateSelfSignedCert(serverCertFile, serverKeyFile, "Server"); err != nil {
+			log.Fatalf("Failed to generate server certificate: %v", err)
+		}
 	}
 
-	if err := generateSelfSignedCert(clientCertFile, clientKeyFile, "My Client"); err != nil {
-		log.Fatalf("Failed to generate client certificate: %v", err)
+	if _, err := os.Stat(clientCertFile); os.IsNotExist(err) || isFileMissing(clientKeyFile) {
+		if err := generateSelfSignedCert(clientCertFile, clientKeyFile, "Client"); err != nil {
+			log.Fatalf("Failed to generate client certificate: %v", err)
+		}
 	}
+}
+
+func isFileMissing(path string) bool {
+	_, err := os.Stat(path)
+	return os.IsNotExist(err)
 }
