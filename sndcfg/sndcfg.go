@@ -2,6 +2,7 @@ package sndcfg
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
@@ -76,7 +77,7 @@ func LoadOrCreateConfig(flags *sndCli.Flags) *Config {
 		if err := SaveConfig(configFile, config); err != nil {
 			log.Fatalf("Failed to create configuration file: %v", err)
 		}
-		log.Println("Configuration file created successfully.")
+		fmt.Println("Configuration file created successfully.")
 		os.Exit(0)
 	}
 

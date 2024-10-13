@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
 	"log"
 	"math/big"
 	"os"
@@ -61,7 +62,7 @@ func generateSelfSignedCert(certFile, keyFile, commonName string) error {
 	}
 	pem.Encode(keyOut, &pem.Block{Type: "EC PRIVATE KEY", Bytes: privBytes})
 
-	log.Println("Self-signed certificate and key generated successfully:", commonName)
+	fmt.Println("Self-signed certificate and key generated successfully:", commonName)
 	return nil
 }
 

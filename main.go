@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"sync"
 
 	certgen "github.com/concernum/snd/cert"
@@ -24,7 +24,7 @@ func main() {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			log.Println("Starting server...")
+			fmt.Println("Starting server...")
 			server.CreateServer(config.ServerAddr, config.ReceivedDir)
 		}()
 	}

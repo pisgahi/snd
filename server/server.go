@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -21,7 +22,7 @@ func CreateServer(address, baseDir string) {
 	}
 	defer listener.Close()
 
-	log.Println("TCP Server started")
+	fmt.Println("TCP Server started")
 
 	for {
 		conn, err := listener.Accept()
@@ -36,7 +37,7 @@ func CreateServer(address, baseDir string) {
 
 func handleConnection(conn net.Conn, baseDir string) {
 	defer conn.Close()
-	log.Println("Handling connection from:", conn.RemoteAddr())
+	fmt.Println("Handling connection from:", conn.RemoteAddr())
 
 	reader := bufio.NewReader(conn)
 
@@ -57,7 +58,7 @@ func handleConnection(conn net.Conn, baseDir string) {
 		log.Println("Invalid file size:", parts[1])
 		return
 	}
-	log.Printf("Receiving file: %s (%d bytes)\n", fileName, fileSize)
+	fmt.Printf("Receiving file: %s (%d bytes)\n", fileName, fileSize)
 
 	err = os.MkdirAll(baseDir, os.ModePerm)
 	if err != nil {
@@ -79,13 +80,13 @@ func handleConnection(conn net.Conn, baseDir string) {
 		chunkHeader, err := reader.ReadString('\n')
 		if err != nil {
 			if err == io.EOF {
-				log.Println("File reception completed from:", conn.RemoteAddr())
+				fmt.Println("File reception completed from:", conn.RemoteAddr())
 				break
 			}
 			log.Println("Error reading chunk header:", err)
 			return
 		}
-		log.Printf("Chunk header received: %s\n", strings.TrimSpace(chunkHeader))
+		fmt.Printf("Chunk header received: %s\n", strings.TrimSpace(chunkHeader))
 
 		bytesToRead := int64(ChunkSize)
 		if totalBytesReceived+ChunkSize > fileSize {
@@ -96,7 +97,7 @@ func handleConnection(conn net.Conn, baseDir string) {
 		bytesRead, err := io.ReadFull(reader, buffer)
 		if err != nil {
 			if err == io.EOF {
-				log.Println("End of file detected")
+				fmt.Println("End of file detected")
 				break
 			}
 			log.Println("Error reading chunk data:", err)
@@ -110,13 +111,13 @@ func handleConnection(conn net.Conn, baseDir string) {
 		}
 
 		totalBytesReceived += int64(bytesRead)
-		log.Printf("Received chunk (%d bytes), total received: %d/%d bytes\n", bytesRead, totalBytesReceived, fileSize)
+		fmt.Printf("Received chunk (%d bytes), total received: %d/%d bytes\n", bytesRead, totalBytesReceived, fileSize)
 
 		if totalBytesReceived >= fileSize {
-			log.Println("File reception completed")
+			fmt.Println("File reception completed")
 			break
 		}
 	}
 
-	log.Println("File received successfully and saved to:", escapedFilePath)
+	fmt.Println("File received successfully")
 }

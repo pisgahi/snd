@@ -23,7 +23,7 @@ func (c *Client) Connect(address string) error {
 	for {
 		c.conn, err = net.Dial("tcp", address)
 		if err == nil {
-			log.Println("Connected to peer:", address)
+			fmt.Println("Connected to peer:", address)
 			return nil
 		}
 		log.Println("Error connecting to peer:", err)
@@ -76,11 +76,11 @@ func (c *Client) SendFile(fileName string) error {
 			return err
 		}
 
-		log.Printf("Sent chunk %d (%d bytes)\n", chunkIndex, bytesRead)
+		fmt.Printf("Sent chunk %d (%d bytes)\n", chunkIndex, bytesRead)
 		chunkIndex++
 	}
 
-	log.Println("File sent successfully in chunks")
+	fmt.Println("File sent successfully in chunks")
 	return nil
 }
 
@@ -90,7 +90,7 @@ func (c *Client) Close() error {
 		if err != nil {
 			return err
 		}
-		log.Println("Connection closed")
+		fmt.Println("Connection closed")
 	}
 	return nil
 }
@@ -111,18 +111,18 @@ func HandleFileSending(c *Client, flags *sndCli.Flags, config *sndcfg.Config) {
 		return
 	}
 
-	log.Println("File sent successfully.")
+	fmt.Println("File sent successfully.")
 
 	if flags.Terminate {
-		log.Println("Terminating connection per -t flag.")
+		fmt.Println("Terminating connection per -t flag.")
 	} else {
-		log.Println("Still connected...")
+		fmt.Println("Still connected...")
 		select {}
 	}
 
 	if err := c.Close(); err != nil {
 		log.Println("Error closing connection:", err)
 	} else {
-		log.Println("Connection closed.")
+		fmt.Println("Connection closed.")
 	}
 }
