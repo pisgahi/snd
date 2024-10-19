@@ -53,8 +53,7 @@ go build -o snd
 ./snd -cert="cert/certs" -addr="127.0.0.1:4040" -dir="User/username/Desktop"
 ```
 
-Usage
-Running the Server
+<b>Running the Server</b>
 
 ```bash
 ./snd -s
