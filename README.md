@@ -1,4 +1,4 @@
-## Snd: File Transfer
+## Snd: Secure File Transfer
 
 Snd is a file transfer program built using Golang, leveraging TCP for reliable and efficient data transmission. This application allows users to send and receive files securely over a network.
 
