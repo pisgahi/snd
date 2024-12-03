@@ -43,7 +43,7 @@ Before you can start using Snd you need to setup some config variables.
 - <b>-addr</b>: the address your server starts on
 - <b>-dir</b> the directory to store received files
 
-5. Build Snd
+5. <b>Build Snd</b>
 
 ```bash
 go build -o snd
