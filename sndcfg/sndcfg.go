@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	sndCli "github.com/concernum/snd/cli"
+	sndCli "github.com/pisgahi/snd/cli"
 )
 
 type Config struct {

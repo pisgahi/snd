@@ -8,8 +8,8 @@ import (
 	"os"
 	"time"
 
-	sndCli "github.com/concernum/snd/cli"
-	"github.com/concernum/snd/sndcfg"
+	sndCli "github.com/pisgahi/snd/cli"
+	"github.com/pisgahi/snd/sndcfg"
 )
 
 type Client struct {

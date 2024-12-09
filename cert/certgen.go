@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/concernum/snd/sndcfg"
+	"github.com/pisgahi/snd/sndcfg"
 )
 
 func generateSelfSignedCert(certFile, keyFile, commonName string) error {

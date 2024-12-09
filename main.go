@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"sync"
 
-	certgen "github.com/concernum/snd/cert"
-	sndCli "github.com/concernum/snd/cli"
-	"github.com/concernum/snd/client"
-	"github.com/concernum/snd/server"
-	"github.com/concernum/snd/sndcfg"
+	certgen "github.com/pisgahi/snd/cert"
+	sndCli "github.com/pisgahi/snd/cli"
+	"github.com/pisgahi/snd/client"
+	"github.com/pisgahi/snd/server"
+	"github.com/pisgahi/snd/sndcfg"
 )
 
 func main() {
