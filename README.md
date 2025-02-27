@@ -49,10 +49,6 @@ Before you can start using Snd you need to setup some config variables.
 go build -o snd
 ```
 
-```bash
-./snd -cert="cert/certs" -addr="127.0.0.1:4040" -dir="User/username/Desktop"
-```
-
 <b>Running the Server</b>
 
 ```bash
